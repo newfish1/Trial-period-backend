@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: probationwork
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/mydata?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf-8
+    username: root
+    password: djx55707
+server:
+  port: 8080
+
+logging:
+  file:
+    name: work.log
+
+
+save:
+  path: D:/Java/Java Project/probationwork/src/main/resources/static/images/
+
+base:
+  url: http://localhost:8080/images/
