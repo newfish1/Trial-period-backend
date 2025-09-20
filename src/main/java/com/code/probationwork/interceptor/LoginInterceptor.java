@@ -9,13 +9,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 
 @Component
+//jwt登录拦截器
 public class LoginInterceptor implements HandlerInterceptor {
     private final RedisTemplate<String, Object> redisTemplate;
 

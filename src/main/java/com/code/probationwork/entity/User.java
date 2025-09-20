@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+//用户实体类
 public class User {
     @TableId(type= IdType.AUTO)
     private Integer userId;

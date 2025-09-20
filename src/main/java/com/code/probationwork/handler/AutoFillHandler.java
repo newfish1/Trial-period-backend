@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 
 @Component
+//自动填充处理器
 public class AutoFillHandler implements MetaObjectHandler {
     @Override
     public void insertFill(MetaObject metaObject) {

@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+//响应体
 public class AjaxResult<T> {
     public static final String SUCCESS_MSG = "success";
     private Integer code;

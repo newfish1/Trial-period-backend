@@ -1,6 +1,5 @@
 package com.code.probationwork.util;
 
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.code.probationwork.constant.ExceptionEnum;
@@ -8,14 +7,12 @@ import com.code.probationwork.entity.Image;
 import com.code.probationwork.exception.MyException;
 import com.code.probationwork.mapper.ImageMapper;
 import jakarta.annotation.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
@@ -38,14 +35,17 @@ public class ImageUtil {
             Image existingImage = imageMapper.selectOne(new LambdaQueryWrapper<Image>().eq(Image::getImageHash, fileHash));
             if (existingImage != null) {
                 // 图片已存在，直接返回现有图片唯一文件名
-                return existingImage.getImageName();
+                return existingImage.getImageUrl();
             }
 
             // 准备保存图片
             // 确保上传目录存在
             File saveDir = new File(savePath);
             if (!saveDir.exists()) {
-                saveDir.mkdirs();
+                boolean mkdirs = saveDir.mkdirs();
+                if (!mkdirs) {
+                    throw new MyException(ExceptionEnum.IMAGE_SAVE_ERROR);
+                }
             }
 
             // 生成唯一文件名
@@ -66,7 +66,7 @@ public class ImageUtil {
                     .build();
 
             imageMapper.insert(image);
-            return image.getImageName();
+            return image.getImageUrl();
 
         } catch (IOException | IllegalArgumentException e) {
             throw new MyException(ExceptionEnum.IMAGE_SAVE_ERROR);

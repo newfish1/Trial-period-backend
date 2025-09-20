@@ -2,8 +2,11 @@ package com.code.probationwork.exception;
 
 import com.code.probationwork.constant.ExceptionEnum;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
+//自定义异常类
 public class MyException extends RuntimeException {
     private final Integer errorCode;
     private final String errorMsg;

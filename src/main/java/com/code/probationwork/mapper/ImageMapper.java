@@ -2,7 +2,6 @@ package com.code.probationwork.mapper;
 
 import com.code.probationwork.entity.Image;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Param;
 
 /**
 * @author Lenovo

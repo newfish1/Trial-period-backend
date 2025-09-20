@@ -7,12 +7,11 @@ import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Data;
 
-/**
- * @TableName post
- */
+
 @TableName(value ="post")
 @Data
 @Builder
+//学生发布反馈实体类
 public class Post {
     @TableId(type= IdType.AUTO)
     private Integer postId;
@@ -34,7 +33,11 @@ public class Post {
 
     private String reply;
 
-    private String assessment;
+    private String comment;
 
-    private String imageName;
+    private String imageUrl;
+    //是否是垃圾信息0不是 1标记 2是
+    private Integer spam;
+
+    private Integer assigner;
 }

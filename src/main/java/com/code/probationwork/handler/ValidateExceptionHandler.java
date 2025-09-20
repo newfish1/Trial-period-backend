@@ -16,6 +16,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @ControllerAdvice
 @Order(10)
+//参数校验异常处理
 public class ValidateExceptionHandler {
 
     //参数校验异常

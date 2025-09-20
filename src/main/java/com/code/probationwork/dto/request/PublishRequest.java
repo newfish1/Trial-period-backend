@@ -1,10 +1,10 @@
 package com.code.probationwork.dto.request;
 
-import cn.hutool.http.body.MultipartBody;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
+//学生发布反馈请求体
 @Data
 @Builder
 public class PublishRequest {
