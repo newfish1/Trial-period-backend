@@ -11,7 +11,7 @@ public class PublishRequest {
     MultipartFile image;
     String title;
     String content;
-    Integer postType;
-    Boolean isArgent;
+    Integer reportType;
+    Boolean isUrgent;
     Boolean isAnonymity;
 }

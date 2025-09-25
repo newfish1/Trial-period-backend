@@ -49,12 +49,12 @@ public class AdminServiceImpl implements AdminService {
         List<Post> posts = postMapper.selectList(queryWrapper1);
         List<GetAllPostResponse> allPosts = posts.stream()
                .map(post -> GetAllPostResponse.builder()
-               .postId(post.getPostId())
+               .reportId(post.getReportId())
                .accountName(post.getIsAnonymity()==1?"匿名用户":post.getAccountName())
                .title(post.getTitle())
                .content(post.getContent())
-               .postType(post.getPostType())
-               .isArgent(post.getIsArgent())
+               .reportType(post.getReportType())
+               .isUrgent(post.getIsUrgent())
                .isAnonymity(post.getIsAnonymity())
                .postTime(post.getPostTime())
                .reply(post.getReply())
@@ -75,7 +75,7 @@ public class AdminServiceImpl implements AdminService {
             throw new MyException(ExceptionEnum.NO_PERMISSION);
         }
         //判断帖子是否存在
-        Post post = postMapper.selectById(markPostRequest.getPostId());
+        Post post = postMapper.selectById(markPostRequest.getReportId());
         if (post == null) {
             throw new MyException(ExceptionEnum.NOT_FOUND_POST);
         }
@@ -94,7 +94,7 @@ public class AdminServiceImpl implements AdminService {
             throw new MyException(ExceptionEnum.NO_PERMISSION);
         }
         //判断帖子是否存在
-        Post post = postMapper.selectById(acceptPostRequest.getPostId());
+        Post post = postMapper.selectById(acceptPostRequest.getReportId());
         if (post == null) {
             throw new MyException(ExceptionEnum.NOT_FOUND_POST);
         }
@@ -117,7 +117,7 @@ public class AdminServiceImpl implements AdminService {
             throw new MyException(ExceptionEnum.NO_PERMISSION);
         }
         //判断帖子是否存在
-        Post post = postMapper.selectById(acceptPostRequest.getPostId());
+        Post post = postMapper.selectById(acceptPostRequest.getReportId());
         if (post == null) {
             throw new MyException(ExceptionEnum.NOT_FOUND_POST);
         }
@@ -132,7 +132,7 @@ public class AdminServiceImpl implements AdminService {
         //撤销接单
         LambdaUpdateWrapper<Post> updateWrapper = new LambdaUpdateWrapper<Post>()
                 .set(Post::getAssigner, null)
-                .eq(Post::getPostId, acceptPostRequest.getPostId());
+                .eq(Post::getReportId, acceptPostRequest.getReportId());
         postMapper.update(null, updateWrapper);
     }
 
@@ -149,15 +149,15 @@ public class AdminServiceImpl implements AdminService {
         LambdaQueryWrapper<Post> queryWrapper = new LambdaQueryWrapper<Post>()
                 .eq(Post::getAssigner, userId)
                 .orderByAsc(Post::getPostTime)
-                .orderByDesc(Post::getIsArgent);
+                .orderByDesc(Post::getIsUrgent);
         List<Post> posts = postMapper.selectList(queryWrapper);
         return posts.stream().map(post -> GetAllPostResponse.builder()
-                .postId(post.getPostId())
+                .reportId(post.getReportId())
                 .accountName(post.getIsAnonymity() == 1 ? "匿名用户" : post.getAccountName())
                 .title(post.getTitle())
                 .content(post.getContent())
-                .postType(post.getPostType())
-                .isArgent(post.getIsArgent())
+                .reportType(post.getReportType())
+                .isUrgent(post.getIsUrgent())
                 .isAnonymity(post.getIsAnonymity())
                 .postTime(post.getPostTime())
                 .reply(post.getReply())
@@ -177,7 +177,7 @@ public class AdminServiceImpl implements AdminService {
             throw new MyException(ExceptionEnum.NO_PERMISSION);
         }
         //判断帖子是否存在
-        Post post = postMapper.selectById(replyPostRequest.getPostId());
+        Post post = postMapper.selectById(replyPostRequest.getReportId());
         if (post == null) {
             throw new MyException(ExceptionEnum.NOT_FOUND_POST);
         }

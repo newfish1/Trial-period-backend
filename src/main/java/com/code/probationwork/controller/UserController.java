@@ -3,6 +3,7 @@ package com.code.probationwork.controller;
 
 import com.code.probationwork.dto.request.EditInformationRequest;
 import com.code.probationwork.dto.request.LoginRequest;
+import com.code.probationwork.dto.response.LoginResponse;
 import com.code.probationwork.entity.User;
 import com.code.probationwork.result.AjaxResult;
 import com.code.probationwork.service.UserService;
@@ -26,7 +27,7 @@ public class UserController {
 
     //用户登录
     @PostMapping("/login")
-    public AjaxResult<String> login(@RequestBody LoginRequest loginRequest) {
+    public AjaxResult<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
         return AjaxResult.success(userService.login(loginRequest));
     }
 

@@ -14,7 +14,7 @@ import lombok.Data;
 //学生发布反馈实体类
 public class Post {
     @TableId(type= IdType.AUTO)
-    private Integer postId;
+    private Integer reportId;
 
     private String accountName;
 
@@ -22,9 +22,9 @@ public class Post {
 
     private String content;
 
-    private Integer postType;
+    private Integer reportType;
 
-    private Integer isArgent;
+    private Integer isUrgent;
 
     private Integer isAnonymity;
 

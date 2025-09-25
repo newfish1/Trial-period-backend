@@ -7,6 +7,6 @@ import lombok.Data;
 @Data
 @Builder
 public class CommentRequest {
-    private Integer postId;
+    private Integer reportId;
     private String comment;
 }

@@ -15,6 +15,6 @@ public class ImageConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // 配置静态资源映射，使前端可以访问上传的图片
         registry.addResourceHandler("/images/**")
-                .addResourceLocations("file:" + savePath + "/");
+                .addResourceLocations("file:" + savePath);
     }
 }

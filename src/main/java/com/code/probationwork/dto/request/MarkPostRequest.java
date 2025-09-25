@@ -5,5 +5,5 @@ import lombok.Data;
 
 @Data
 public class MarkPostRequest {
-    private String postId;
+    private String reportId;
 }

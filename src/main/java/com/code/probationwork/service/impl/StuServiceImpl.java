@@ -32,28 +32,26 @@ public class StuServiceImpl implements StuService {
     private ImageUtil imageUtil;
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    //@Transactional(rollbackFor = Exception.class)
     public void publish(PublishRequest publishRequest, HttpServletRequest request) {
-        try{
-            String imageUrl = null;
-            String accountName=(String) request.getAttribute("accountName");
-            //保存图片
-            if (publishRequest.getImage() != null && !publishRequest.getImage().isEmpty()) {
-                imageUrl = imageUtil.saveImage(publishRequest.getImage());
-            }
-            Post post = Post.builder()
-                    .title(publishRequest.getTitle())
-                    .content(publishRequest.getContent())
-                    .postType(publishRequest.getPostType())
-                    .isArgent(publishRequest.getIsArgent()?1:0)
-                    .isAnonymity(publishRequest.getIsAnonymity()?1:0)
-                    .imageUrl(imageUrl)
-                    .accountName(accountName)
-                    .build();
-            postMapper.insert(post);
-        }catch (Exception e){
-            throw new MyException(ExceptionEnum.PUBLISH_FAILED);
+
+        String imageUrl = null;
+        String accountName=(String) request.getAttribute("accountName");
+        //保存图片
+        if (publishRequest.getImage() != null && !publishRequest.getImage().isEmpty() && publishRequest.getImage().getSize() > 0) {
+            imageUrl = imageUtil.saveImage(publishRequest.getImage());
         }
+        Post post = Post.builder()
+                .title(publishRequest.getTitle())
+                .content(publishRequest.getContent())
+                .reportType(publishRequest.getReportType())
+                .isUrgent(publishRequest.getIsUrgent()?1:0)
+                .isAnonymity(publishRequest.getIsAnonymity()?1:0)
+                .imageUrl(imageUrl)
+                .accountName(accountName)
+                .build();
+        postMapper.insert(post);
+
     }
     @Override
     public List<GetAllPostResponse> getAllPost(HttpServletRequest request) {
@@ -63,13 +61,13 @@ public class StuServiceImpl implements StuService {
                 .orderByDesc(Post::getPostTime);
         return postMapper.selectList(queryWrapper).stream()
                 .map(post -> GetAllPostResponse.builder()
-                        .postId(post.getPostId())
+                        .reportId(post.getReportId())
                         .title(post.getTitle())
                         .content(post.getContent())
-                        .postType(post.getPostType())
-                        .isArgent(post.getIsArgent())
+                        .reportType(post.getReportType())
+                        .isUrgent(post.getIsUrgent())
                         .isAnonymity(post.getIsAnonymity())
-                        .imageUrl(post.getImageUrl())
+                        .imageUrl("http://abd77f82.natappfree.cc"+post.getImageUrl())
                         .accountName(post.getAccountName())
                         .postTime(post.getPostTime())
                         .reply(post.getReply())
@@ -83,7 +81,7 @@ public class StuServiceImpl implements StuService {
     @Transactional(rollbackFor = Exception.class)
     public void comment(CommentRequest commentRequest, HttpServletRequest request) {
         Integer userId = (Integer) request.getAttribute("userId");
-        Post post = postMapper.selectById(commentRequest.getPostId());
+        Post post = postMapper.selectById(commentRequest.getReportId());
         if(post==null){
             throw new MyException(ExceptionEnum.NOT_FOUND_POST);
         }

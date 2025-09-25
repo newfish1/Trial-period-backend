@@ -68,7 +68,7 @@ public class ImageUtil {
             imageMapper.insert(image);
             return image.getImageUrl();
 
-        } catch (IOException | IllegalArgumentException e) {
+        } catch (Exception e) {
             throw new MyException(ExceptionEnum.IMAGE_SAVE_ERROR);
         }
     }

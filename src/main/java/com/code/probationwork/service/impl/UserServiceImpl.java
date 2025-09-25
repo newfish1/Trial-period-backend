@@ -3,6 +3,7 @@ package com.code.probationwork.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.code.probationwork.dto.request.EditInformationRequest;
 import com.code.probationwork.dto.request.LoginRequest;
+import com.code.probationwork.dto.response.LoginResponse;
 import com.code.probationwork.entity.User;
 import com.code.probationwork.exception.MyException;
 import com.code.probationwork.mapper.UserMapper;
@@ -63,7 +64,7 @@ public class UserServiceImpl implements UserService {
 
     //用户登录
     @Override
-    public String login(LoginRequest loginRequest) {
+    public LoginResponse login(LoginRequest loginRequest) {
         //查看是否存在
         LambdaQueryWrapper<User> userQueryWrapper = new LambdaQueryWrapper<>();
         userQueryWrapper.eq(User::getAccountName,loginRequest.getAccountName());
@@ -81,7 +82,8 @@ public class UserServiceImpl implements UserService {
         claims.put("accountName",user.getAccountName());
         String token = JwtUtil.genToken(claims);
         redisTemplate.opsForValue().set("user:token:"+user.getUserId(),token,24, TimeUnit.HOURS);
-        return token;
+        //返回token
+        return LoginResponse.builder().username(user.getUsername()).token(token).userType(user.getUserType()).build();
     }
 
     //用户退出登录

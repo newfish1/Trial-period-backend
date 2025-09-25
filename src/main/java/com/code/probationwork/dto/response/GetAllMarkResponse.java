@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class GetAllMarkResponse {
-    private Integer postId;
+    private Integer reportId;
 
     private String accountName;
 
@@ -19,9 +19,9 @@ public class GetAllMarkResponse {
 
     private String content;
 
-    private Integer postType;
+    private Integer reportType;
 
-    private Integer isArgent;
+    private Integer isUrgent;
 
     private Integer isAnonymity;
 

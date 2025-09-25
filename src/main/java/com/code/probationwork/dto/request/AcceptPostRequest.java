@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 @Builder
 public class AcceptPostRequest {
-    private Integer postId;
+    private Integer reportId;
 }

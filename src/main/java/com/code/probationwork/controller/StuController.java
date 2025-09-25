@@ -19,7 +19,7 @@ public class StuController {
     private StuService stuService;
 
     //学生发布反馈
-    @PostMapping("/post")
+    @PostMapping("/report")
     public AjaxResult<String> publish(PublishRequest publishRequest, HttpServletRequest request){
         stuService.publish(publishRequest, request);
         return AjaxResult.success("发布成功");

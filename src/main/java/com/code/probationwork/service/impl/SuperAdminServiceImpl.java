@@ -158,12 +158,12 @@ public class SuperAdminServiceImpl implements SuperAdminService {
         List<Post> posts=postMapper.selectList(new LambdaQueryWrapper<Post>().eq(Post::getSpam,1));
         return posts.stream().map(
                 post->GetAllMarkResponse.builder().
-                        postId(post.getPostId()).
+                        reportId(post.getReportId()).
                         accountName(post.getIsAnonymity()==1?"匿名用户":post.getAccountName()).
                         title(post.getTitle()).
                         content(post.getContent()).
-                        postType(post.getPostType()).
-                        isArgent(post.getIsArgent()).
+                        reportType(post.getReportType()).
+                        isUrgent(post.getIsUrgent()).
                         isAnonymity(post.getIsAnonymity()).
                         postTime(post.getPostTime()).
                         reply(post.getReply()).
@@ -183,7 +183,7 @@ public class SuperAdminServiceImpl implements SuperAdminService {
             throw new MyException(ExceptionEnum.NO_PERMISSION);
         }
         //审核帖子
-        Post post = postMapper.selectById(reviewPostRequest.getPostId());
+        Post post = postMapper.selectById(reviewPostRequest.getReportId());
         if (post == null) {
             throw new MyException(ExceptionEnum.NOT_FOUND_POST);
         }

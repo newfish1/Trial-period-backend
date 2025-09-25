@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class ReplyPostRequest {
-    private Integer postId;
+    private Integer reportId;
     private String reply;
 }

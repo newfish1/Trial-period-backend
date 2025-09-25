@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class GetAllPostResponse {
-    private Integer postId;
+    private Integer reportId;
 
     private String accountName;
 
@@ -20,9 +20,9 @@ public class GetAllPostResponse {
 
     private String imageUrl;
 
-    private Integer postType;
+    private Integer reportType;
 
-    private Integer isArgent;
+    private Integer isUrgent;
 
     private Integer isAnonymity;
 

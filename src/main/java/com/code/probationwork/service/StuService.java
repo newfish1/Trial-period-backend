@@ -11,4 +11,5 @@ public interface StuService {
     void publish(PublishRequest publishRequest, HttpServletRequest request);
     List<GetAllPostResponse> getAllPost(HttpServletRequest request);
     void comment(CommentRequest commentRequest, HttpServletRequest request);
+
 }

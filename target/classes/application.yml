@@ -9,7 +9,7 @@ spring:
   mail:
     host: smtp.qq.com # 邮箱服务器主机地址
     username: 2974651270@qq.com # 你的邮箱地址
-    password: fxlzsuihiriudfjc # 授权码
+    password: fxlzsuihiriudfjc # 授权�?
     default-encoding: UTF-8
     properties:
       mail:
@@ -22,8 +22,8 @@ spring:
             enable: true
   servlet:
     multipart:
-          max-file-size: 10MB  # 单个文件最大大小
-          max-request-size: 100MB  # 整个请求最大大小
+          max-file-size: 10MB  # 单个文件最大大�?
+          max-request-size: 100MB  # 整个请求最大大�?
 server:
   port: 8080
 
@@ -36,4 +36,4 @@ save:
   path: D:/Java/JavaProject/probationwork/src/main/resources/static/images/
 
 base:
-  url: http://localhost:8080/images/
+  url: /images/
