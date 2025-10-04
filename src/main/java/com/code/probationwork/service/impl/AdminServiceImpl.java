@@ -64,6 +64,41 @@ public class AdminServiceImpl implements AdminService {
         return allPosts;
     }
 
+//    @Override
+//    public Page<GetAllPostResponse> getAllPost(HttpServletRequest request, Integer pageNum, Integer pageSize) {
+//        // 获取当前登录用户的id，判断其是否有权限
+//        Integer userId = (Integer) request.getAttribute("userId");
+//        User user = userMapper.selectById(userId);
+//        if(user.getUserType() == 1){
+//            throw new MyException(ExceptionEnum.NO_PERMISSION);
+//        }
+//
+//        // 创建分页对象
+//        Page<Post> page = new Page<>(pageNum, pageSize);
+//
+//        // 按时间升序分页查询所有非垃圾帖子
+//        LambdaQueryWrapper<Post> queryWrapper = new LambdaQueryWrapper<Post>()
+//                .orderByAsc(Post::getPostTime)
+//                .eq(Post::getSpam, 0);
+//
+//        Page<Post> postPage = postMapper.selectPage(page, queryWrapper);
+//
+//        // 转换为响应对象的分页
+//        return postPage.convert(post -> GetAllPostResponse.builder()
+//                .reportId(post.getReportId())
+//                .accountName(post.getIsAnonymity() == 1 ? "匿名用户" : post.getAccountName())
+//                .title(post.getTitle())
+//                .content(post.getContent())
+//                .reportType(post.getReportType())
+//                .isUrgent(post.getIsUrgent())
+//                .isAnonymity(post.getIsAnonymity())
+//                .postTime(post.getPostTime())
+//                .reply(post.getReply())
+//                .comment(post.getComment())
+//                .imageUrl(post.getImageUrl())
+//                .build());
+//    }
+
 
     //管理员对帖子进行标记
     @Override
@@ -78,6 +113,9 @@ public class AdminServiceImpl implements AdminService {
         Post post = postMapper.selectById(markPostRequest.getReportId());
         if (post == null) {
             throw new MyException(ExceptionEnum.NOT_FOUND_POST);
+        }
+        if(post.getReply()!=null){
+            throw new MyException(ExceptionEnum.POST_ALREADY_REPLIED);
         }
         //标记为垃圾信息
         post.setSpam(1);

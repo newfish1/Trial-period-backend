@@ -32,6 +32,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void register(User user) {
+        LambdaQueryWrapper<User> userQueryWrapper = new LambdaQueryWrapper<>();
+        userQueryWrapper.eq(User::getAccountName,user.getAccountName());
+        User user1 = userMapper.selectOne(userQueryWrapper);
+        if(user1!=null){
+            throw new MyException(ExceptionEnum.REPEAT_REGISTER);
+        }
         //校验账号格式，只能为数字
         if(!user.getAccountName().matches("\\d+")){
             throw new MyException(ExceptionEnum.USERNAME_DIGIT_ERROR);
@@ -52,12 +58,6 @@ public class UserServiceImpl implements UserService {
         String password = user.getPassword();
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(11);
         password = bCryptPasswordEncoder.encode(password);
-        LambdaQueryWrapper<User> userQueryWrapper = new LambdaQueryWrapper<>();
-        userQueryWrapper.eq(User::getAccountName,user.getAccountName());
-        User user1 = userMapper.selectOne(userQueryWrapper);
-        if(user1!=null){
-            throw new MyException(ExceptionEnum.REPEAT_REGISTER);
-        }
         user.setPassword(password);
         userMapper.insert(user);
     }
@@ -121,7 +121,6 @@ public class UserServiceImpl implements UserService {
         if(editInformationRequest.getPassword()!=null){
             user.setPassword(editInformationRequest.getPassword());
         }
-
         if(editInformationRequest.getEmail()!=null){
             user.setEmail(editInformationRequest.getEmail());
         }

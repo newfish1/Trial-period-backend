@@ -15,11 +15,19 @@ import com.code.probationwork.service.StuService;
 import com.code.probationwork.util.ImageUtil;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.data.redis.connection.stream.RecordId;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.redis.core.RedisTemplate;
 
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
+
 
 @Service
 //学生服务实现类
@@ -30,11 +38,32 @@ public class StuServiceImpl implements StuService {
     private PostMapper postMapper;
     @Resource
     private ImageUtil imageUtil;
+    @Resource
+    private RedisTemplate<String, Object> redisTemplate;
 
+//    @Override
+//    @Transactional(rollbackFor = Exception.class)
+//    public void publish(PublishRequest publishRequest, HttpServletRequest request) {
+//        String imageUrl = null;
+//        String accountName=(String) request.getAttribute("accountName");
+//        //保存图片
+//        if (publishRequest.getImage() != null && !publishRequest.getImage().isEmpty() && publishRequest.getImage().getSize() > 0) {
+//            imageUrl = imageUtil.saveImage(publishRequest.getImage());
+//        }
+//        Post post = Post.builder()
+//                .title(publishRequest.getTitle())
+//                .content(publishRequest.getContent())
+//                .reportType(publishRequest.getReportType())
+//                .isUrgent(publishRequest.getIsUrgent()?1:0)
+//                .isAnonymity(publishRequest.getIsAnonymity()?1:0)
+//                .imageUrl(imageUrl)
+//                .accountName(accountName)
+//                .build();
+//        postMapper.insert(post);
+//    }
     @Override
-    //@Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = Exception.class)
     public void publish(PublishRequest publishRequest, HttpServletRequest request) {
-
         String imageUrl = null;
         String accountName=(String) request.getAttribute("accountName");
         //保存图片
@@ -50,9 +79,24 @@ public class StuServiceImpl implements StuService {
                 .imageUrl(imageUrl)
                 .accountName(accountName)
                 .build();
-        postMapper.insert(post);
-
+        Map<String,Object> postData = new HashMap<>();
+        postData.put("accountName",accountName);
+        postData.put("title",publishRequest.getTitle());
+        postData.put("content",publishRequest.getContent());
+        postData.put("reportType",publishRequest.getReportType());
+        postData.put("isUrgent",publishRequest.getIsUrgent()?1:0);
+        postData.put("isAnonymity",publishRequest.getIsAnonymity()?1:0);
+        postData.put("imageUrl",imageUrl);
+        try{
+            //将帖子数据添加到stream中，并且设置最大长度为1000
+            RecordId recordId = redisTemplate.opsForStream().add("postStream",postData);
+            //限定10000条
+            redisTemplate.opsForStream().trim("postStream",10000);
+        }catch (Exception e){
+            postMapper.insert(post);
+        }
     }
+
     @Override
     public List<GetAllPostResponse> getAllPost(HttpServletRequest request) {
         String accountName=(String) request.getAttribute("accountName");
@@ -67,7 +111,7 @@ public class StuServiceImpl implements StuService {
                         .reportType(post.getReportType())
                         .isUrgent(post.getIsUrgent())
                         .isAnonymity(post.getIsAnonymity())
-                        .imageUrl("http://abd77f82.natappfree.cc"+post.getImageUrl())
+                        .imageUrl(post.getImageUrl())
                         .accountName(post.getAccountName())
                         .postTime(post.getPostTime())
                         .reply(post.getReply())

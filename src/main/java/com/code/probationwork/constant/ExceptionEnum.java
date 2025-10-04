@@ -29,6 +29,7 @@ public enum ExceptionEnum {
     POST_ALREADY_ASSIGNED(202520, "帖子已被接单"),
     POST_ALREADY_REPLIED(202521, "反馈已被处理"),
     POST_NOT_REPLIED(202522, "帖子未被处理，无法评论"),
+    LOCK_ERROR(202523, "其他管理员正在操作，稍后重试"),
     ;
     private final Integer errorCode;
     private final String errorMsg;

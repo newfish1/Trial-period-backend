@@ -6,10 +6,14 @@ spring:
     url: jdbc:mysql://localhost:3306/mydata?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf-8
     username: root
     password: djx55707
+  data:
+    redis:
+      host: localhost
+      port: 6379
   mail:
     host: smtp.qq.com # 邮箱服务器主机地址
     username: 2974651270@qq.com # 你的邮箱地址
-    password: fxlzsuihiriudfjc # 授权�?
+    password: fxlzsuihiriudfjc # 授权码
     default-encoding: UTF-8
     properties:
       mail:
@@ -22,8 +26,8 @@ spring:
             enable: true
   servlet:
     multipart:
-          max-file-size: 10MB  # 单个文件最大大�?
-          max-request-size: 100MB  # 整个请求最大大�?
+          max-file-size: 10MB  # 单个文件最大大?
+          max-request-size: 100MB  # 整个请求最大大?
 server:
   port: 8080
 
@@ -36,4 +40,4 @@ save:
   path: D:/Java/JavaProject/probationwork/src/main/resources/static/images/
 
 base:
-  url: /images/
+  url: http://hc88d793.natappfree.cc/images/

@@ -15,11 +15,16 @@ import com.code.probationwork.service.SuperAdminService;
 import com.code.probationwork.util.SendEmailUtil;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,6 +35,8 @@ public class SuperAdminServiceImpl implements SuperAdminService {
     private PostMapper postMapper;
     @Resource
     private SendEmailUtil sendEmailUtil;
+    @Resource
+    private RedissonClient redissonClient;
 
     //超级管理员查看所有用户
     @Override
@@ -89,6 +96,9 @@ public class SuperAdminServiceImpl implements SuperAdminService {
         //删除一个用户
         else if (operationType == 2) {
             User u=userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getAccountName, modifyUserRequest.getAccountName()));
+            if(u==null){
+                throw new MyException(ExceptionEnum.NOT_FOUND_USER);
+            }
             if(u.getUserType()==3){
                 throw new MyException(ExceptionEnum.CANNOT_DELETE_SUPERADMIN);
             }
@@ -101,29 +111,44 @@ public class SuperAdminServiceImpl implements SuperAdminService {
             User user3 = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getAccountName, modifyUserRequest.getAccountName()));
             if (user3 == null) {
                 throw new MyException(ExceptionEnum.NOT_FOUND_USER);
-            } else if (user3.getUserType() == 3) {
-                throw new MyException(ExceptionEnum.CANNOT_MODIFY_SUPERADMIN);
             }
-            //判断是否需要修改的为null，不为null则修改对应信息
-            if (modifyUserRequest.getAccountName() != null) {
-                user3.setAccountName(modifyUserRequest.getAccountName());
+            //获取锁对象
+            String lockKey="lock:accountName:"+modifyUserRequest.getAccountName();
+            RLock lock=redissonClient.getLock(lockKey);
+            try {
+                //尝试获取锁，设置等待获取时间5s，锁的超时时间为1h
+                boolean locked=lock.tryLock(5, 3600, TimeUnit.SECONDS);
+                if (!locked) {
+                    throw new MyException(ExceptionEnum.LOCK_ERROR);
+                }
+                //判断是否需要修改的为null，不为null则修改对应信息
+                if (modifyUserRequest.getAccountName() != null) {
+                    user3.setAccountName(modifyUserRequest.getAccountName());
+                }
+                if (modifyUserRequest.getUsername() != null) {
+                    user3.setUsername(modifyUserRequest.getUsername());
+                }
+                if (modifyUserRequest.getUsername() != null) {
+                    user3.setUsername(modifyUserRequest.getUsername());
+                }
+                if (modifyUserRequest.getPassword() != null) {
+                    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                    String encode = passwordEncoder.encode(modifyUserRequest.getPassword());
+                    user3.setPassword(encode);
+                }
+                if (modifyUserRequest.getUserType() != null) {
+                    user3.setUserType(modifyUserRequest.getUserType());
+                }
+                if (modifyUserRequest.getEmail() != null) {
+                    user3.setEmail(modifyUserRequest.getEmail());
+                }
+                userMapper.updateById(user3);
+                return "修改成功";
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            } finally {
+                lock.unlock();
             }
-            if (modifyUserRequest.getUsername() != null) {
-                user3.setUsername(modifyUserRequest.getUsername());
-            }
-            if (modifyUserRequest.getPassword() != null) {
-                BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-                String encode = passwordEncoder.encode(modifyUserRequest.getPassword());
-                user3.setPassword(encode);
-            }
-            if (modifyUserRequest.getUserType() != null) {
-                user3.setUserType(modifyUserRequest.getUserType());
-            }
-            if (modifyUserRequest.getEmail() != null) {
-                user3.setEmail(modifyUserRequest.getEmail());
-            }
-            userMapper.updateById(user3);
-            return "修改成功";
         }
 
         //查看accountName用户
