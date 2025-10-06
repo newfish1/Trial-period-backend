@@ -1,6 +1,7 @@
 package com.code.probationwork.controller;
 
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.code.probationwork.dto.request.AcceptPostRequest;
 import com.code.probationwork.dto.request.MarkPostRequest;
 import com.code.probationwork.dto.request.ReplyPostRequest;
@@ -21,8 +22,9 @@ public class AdminController {
 
     //管理员获取所有反馈记录
     @GetMapping("/getallpost")
-    public AjaxResult<List<GetAllPostResponse>> getAllPost(HttpServletRequest request) {
-        return AjaxResult.success(adminService.getAllPost(request));
+    public AjaxResult<Page<GetAllPostResponse>> getAllPost(HttpServletRequest request, @RequestParam(defaultValue = "1") Integer pageNum) {
+        Integer pageSize = 10;
+        return AjaxResult.success(adminService.getAllPost(request, pageNum, pageSize));
     }
 
     //管理员对帖子进行标记

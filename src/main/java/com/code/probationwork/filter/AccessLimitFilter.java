@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 // 基于访问频率的黑名单过滤器
 public class AccessLimitFilter implements Filter {
 
-    // 注入RedisTemplate用于存储访问频率数据
     @Autowired
     private StringRedisTemplate redisTemplate;
 
@@ -44,18 +43,13 @@ public class AccessLimitFilter implements Filter {
             // X-Forwarded-For可能包含多个IP，取第一个
             return ip.split(",")[0].trim();
         }
-
-        String xRealIp = request.getHeader("X-Real-IP");
-        if (xRealIp != null && !xRealIp.isEmpty()) {
-            return xRealIp;
-        }
         return ip == null ? request.getRemoteAddr() : ip;
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        // 类型转换
+        // 类型转换，失败直接下一个过滤器处理
         if (!(request instanceof HttpServletRequest req) || !(response instanceof HttpServletResponse res)) {
             chain.doFilter(request, response);
             return;

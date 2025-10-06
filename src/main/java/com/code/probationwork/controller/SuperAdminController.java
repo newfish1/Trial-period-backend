@@ -1,9 +1,11 @@
 package com.code.probationwork.controller;
 
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.code.probationwork.dto.request.ModifyUserRequest;
 import com.code.probationwork.dto.request.ReviewPostRequest;
 import com.code.probationwork.dto.response.GetAllMarkResponse;
+import com.code.probationwork.dto.response.GetAllPostResponse;
 import com.code.probationwork.dto.response.GetAllUserResponse;
 import com.code.probationwork.result.AjaxResult;
 import com.code.probationwork.service.SuperAdminService;
@@ -18,6 +20,12 @@ import java.util.List;
 public class SuperAdminController {
     @Resource
     private SuperAdminService superAdminService;
+
+    //超级管理员获取所有反馈记录
+    @GetMapping("/supergetallpost")
+    public AjaxResult<List<GetAllPostResponse>> getAllPost(HttpServletRequest request) {
+        return AjaxResult.success(superAdminService.getAllPost(request));
+    }
 
     //超级管理员获取所有用户记录
     @GetMapping("/getalluser")

@@ -22,7 +22,7 @@ public class StuController {
     @PostMapping("/report")
     public AjaxResult<String> publish(PublishRequest publishRequest, HttpServletRequest request){
         stuService.publish(publishRequest, request);
-        return AjaxResult.success("发布成功");
+        return AjaxResult.success("操作成功，请查看是否发布成功");
     }
 
     //学生查看所有反馈

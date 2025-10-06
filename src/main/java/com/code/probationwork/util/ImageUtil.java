@@ -37,7 +37,6 @@ public class ImageUtil {
                 // 图片已存在，直接返回现有图片唯一文件名
                 return existingImage.getImageUrl();
             }
-
             // 准备保存图片
             // 确保上传目录存在
             File saveDir = new File(savePath);
@@ -47,16 +46,13 @@ public class ImageUtil {
                     throw new MyException(ExceptionEnum.IMAGE_SAVE_ERROR);
                 }
             }
-
             // 生成唯一文件名
             String originalFilename = file.getOriginalFilename();
             String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
             String imageName = UUID.randomUUID().toString() + extension;
-
             // 保存图片文件
             Path filePath = Paths.get(savePath, imageName);
             file.transferTo(filePath);
-
             //保存图片信息到数据库
             Image image = Image.builder()
                     .imageName(imageName)
@@ -64,7 +60,6 @@ public class ImageUtil {
                     .imageUrl(baseUrl + imageName)
                     .imageHash(fileHash)
                     .build();
-
             imageMapper.insert(image);
             return image.getImageUrl();
 

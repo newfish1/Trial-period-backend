@@ -3,13 +3,14 @@ spring:
     name: probationwork
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/mydata?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf-8
+    url: jdbc:mysql://localhost:3306/mydata?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf-8&allowPublicKeyRetrieval=true
     username: root
     password: djx55707
   data:
     redis:
       host: localhost
       port: 6379
+      timeout: 30
   mail:
     host: smtp.qq.com # 邮箱服务器主机地址
     username: 2974651270@qq.com # 你的邮箱地址
@@ -40,4 +41,4 @@ save:
   path: D:/Java/JavaProject/probationwork/src/main/resources/static/images/
 
 base:
-  url: http://hc88d793.natappfree.cc/images/
+  url: http://localhost:8080/images/

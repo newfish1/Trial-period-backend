@@ -1,5 +1,6 @@
 package com.code.probationwork.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.code.probationwork.dto.request.AcceptPostRequest;
 import com.code.probationwork.dto.request.MarkPostRequest;
 import com.code.probationwork.dto.request.ReplyPostRequest;
@@ -9,7 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface AdminService {
-    List<GetAllPostResponse> getAllPost(HttpServletRequest request);
+    Page<GetAllPostResponse> getAllPost(HttpServletRequest request, Integer pageNum, Integer pageSize);
     void markPost(HttpServletRequest request, MarkPostRequest markPostRequest);
     void acceptPost(HttpServletRequest request, AcceptPostRequest acceptPostRequest);
     List<GetAllPostResponse> getAcceptPost(HttpServletRequest request);

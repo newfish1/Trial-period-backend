@@ -96,7 +96,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void edit(EditInformationRequest editInformationRequest, HttpServletRequest request) {
         //判断密码是否符合要求，并且修改
-        if(editInformationRequest.getPassword()!=null){
+        if(editInformationRequest.getPassword()!=null&& !editInformationRequest.getPassword().isEmpty()){
             if(editInformationRequest.getPassword().length()<8||editInformationRequest.getPassword().length()>16){
                 throw new MyException(ExceptionEnum.PASSWORD_LENGTH_ERROR);
             }
@@ -106,7 +106,7 @@ public class UserServiceImpl implements UserService {
         }
 
         //校验邮箱格式
-        if(editInformationRequest.getEmail()!=null){
+        if(editInformationRequest.getEmail()!=null&& !editInformationRequest.getEmail().isEmpty()){
             if(!editInformationRequest.getEmail().matches("^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*\\.[a-zA-Z0-9]{2,6}$")){
                 throw new MyException(ExceptionEnum.EMAIL_FORMAT_ERROR);
             }
@@ -115,13 +115,13 @@ public class UserServiceImpl implements UserService {
         User user = userMapper.selectById(userId);
 
         //不为空则修改
-        if(editInformationRequest.getUsername()!=null){
+        if(editInformationRequest.getUsername()!=null&& !editInformationRequest.getUsername().isEmpty()){
             user.setUsername(editInformationRequest.getUsername());
         }
-        if(editInformationRequest.getPassword()!=null){
+        if(editInformationRequest.getPassword()!=null&& !editInformationRequest.getPassword().isEmpty()){
             user.setPassword(editInformationRequest.getPassword());
         }
-        if(editInformationRequest.getEmail()!=null){
+        if(editInformationRequest.getEmail()!=null&& !editInformationRequest.getEmail().isEmpty()){
             user.setEmail(editInformationRequest.getEmail());
         }
         userMapper.updateById(user);

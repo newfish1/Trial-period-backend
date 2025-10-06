@@ -5,6 +5,7 @@ import com.code.probationwork.constant.ExceptionEnum;
 import com.code.probationwork.dto.request.ModifyUserRequest;
 import com.code.probationwork.dto.request.ReviewPostRequest;
 import com.code.probationwork.dto.response.GetAllMarkResponse;
+import com.code.probationwork.dto.response.GetAllPostResponse;
 import com.code.probationwork.dto.response.GetAllUserResponse;
 import com.code.probationwork.entity.Post;
 import com.code.probationwork.entity.User;
@@ -17,8 +18,6 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +37,36 @@ public class SuperAdminServiceImpl implements SuperAdminService {
     @Resource
     private RedissonClient redissonClient;
 
+    @Override
+    //管理员查看所有帖子
+    public List<GetAllPostResponse> getAllPost(HttpServletRequest request) {
+        //获取当前登录用户的id，判断其是否有权限
+        Integer userId = (Integer) request.getAttribute("userId");
+        User user=userMapper.selectById(userId);
+        if(user.getUserType()==1){
+            throw new MyException(ExceptionEnum.NO_PERMISSION);
+        }
+        //按时间升序返回所有帖子
+        LambdaQueryWrapper<Post> queryWrapper1 = new LambdaQueryWrapper<Post>()
+                .orderByDesc(Post::getPostTime)
+                .eq(Post::getSpam,0);
+        List<Post> posts = postMapper.selectList(queryWrapper1);
+        List<GetAllPostResponse> allPosts = posts.stream()
+                .map(post -> GetAllPostResponse.builder()
+                        .reportId(post.getReportId())
+                        .accountName(post.getIsAnonymity()==1?"匿名用户":post.getAccountName())
+                        .title(post.getTitle())
+                        .content(post.getContent())
+                        .reportType(post.getReportType())
+                        .isUrgent(post.getIsUrgent())
+                        .isAnonymity(post.getIsAnonymity())
+                        .postTime(post.getPostTime())
+                        .reply(post.getReply())
+                        .comment(post.getComment())
+                        .imageUrl(post.getImageUrl())
+                        .build()).collect(Collectors.toList());
+        return allPosts;
+    }
     //超级管理员查看所有用户
     @Override
     public List<GetAllUserResponse> getAllUser(HttpServletRequest request) {

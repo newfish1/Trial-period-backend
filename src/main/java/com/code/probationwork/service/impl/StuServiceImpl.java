@@ -15,6 +15,7 @@ import com.code.probationwork.service.StuService;
 import com.code.probationwork.util.ImageUtil;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.stream.RecordId;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,7 @@ import java.util.stream.DoubleStream;
 
 
 @Service
+@Slf4j
 //学生服务实现类
 public class StuServiceImpl implements StuService {
     @Resource
@@ -64,8 +66,14 @@ public class StuServiceImpl implements StuService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void publish(PublishRequest publishRequest, HttpServletRequest request) {
+        if(publishRequest.getContent()==null||publishRequest.getIsUrgent()==null
+                ||publishRequest.getReportType()==null||publishRequest.getIsAnonymity()==null){
+            throw new MyException(ExceptionEnum.NULL_MESSAGE);
+        }
         String imageUrl = null;
         String accountName=(String) request.getAttribute("accountName");
+        User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getAccountName, accountName));
+
         //保存图片
         if (publishRequest.getImage() != null && !publishRequest.getImage().isEmpty() && publishRequest.getImage().getSize() > 0) {
             imageUrl = imageUtil.saveImage(publishRequest.getImage());
@@ -87,13 +95,19 @@ public class StuServiceImpl implements StuService {
         postData.put("isUrgent",publishRequest.getIsUrgent()?1:0);
         postData.put("isAnonymity",publishRequest.getIsAnonymity()?1:0);
         postData.put("imageUrl",imageUrl);
+        postData.put("email",user.getEmail());
         try{
             //将帖子数据添加到stream中，并且设置最大长度为1000
             RecordId recordId = redisTemplate.opsForStream().add("postStream",postData);
             //限定10000条
             redisTemplate.opsForStream().trim("postStream",10000);
         }catch (Exception e){
-            postMapper.insert(post);
+            log.info("发布帖子到stream失败");
+            try{
+                postMapper.insert(post);
+            }catch (Exception e1){
+                throw new MyException(ExceptionEnum.PUBLISH_FAILED);
+            }
         }
     }
 
