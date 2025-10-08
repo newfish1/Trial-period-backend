@@ -47,23 +47,31 @@ public class StreamHandle {
         readStream();
     }
 
-
     @Async("streamExecutor")
     public void readStream(){
-        //读取stream中的消息
-        List<MapRecord<String, Object, Object>> messages = redisTemplate.opsForStream()
-                .read(Consumer.from(STREAM_GROUP_NAME, STREAM_CONSUMER_NAME),
-                        StreamReadOptions.empty().count(10).block(Duration.ofSeconds(10)),
-                        StreamOffset.create(STREAM_KEY, ReadOffset.lastConsumed()));
-        if (messages != null && !messages.isEmpty()) {
-            for (MapRecord<String, Object, Object> message : messages) {
-                //处理消息
-                processMessage(message);
+        try {
+            //读取stream中的消息
+            List<MapRecord<String, Object, Object>> messages = redisTemplate.opsForStream()
+                    .read(Consumer.from(STREAM_GROUP_NAME, STREAM_CONSUMER_NAME),
+                            StreamReadOptions.empty().count(10).block(Duration.ofSeconds(10)),
+                            StreamOffset.create(STREAM_KEY, ReadOffset.lastConsumed()));
+            if (messages != null && !messages.isEmpty()) {
+                for (MapRecord<String, Object, Object> message : messages) {
+                    //处理消息
+                    processMessage(message);
+                }
             }
+        }catch (Exception e){
+            Boolean hasKey = redisTemplate.hasKey(STREAM_KEY);
+            if (hasKey != null && !hasKey) {
+                // 创建一个空的stream
+                redisTemplate.opsForStream().add(STREAM_KEY, Map.of("init", "init"));
+            }
+            initConsumerGroup();
         }
     }
-    //处理消息
     @Async("messageExecutor")
+    //处理消息
     public void processMessage(MapRecord<String, Object, Object> message) {
         int maxTry = 5;
         int countTry = 0;
